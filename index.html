@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innovartus Task Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1>Innovartus Cloud Task Manager</h1>
+            <p>A simple SaaS application deployed using CI/CD</p>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="statistics">
+            <div class="stat-card">
+                <h2 id="totalTasks">0</h2>
+                <p>Total Tasks</p>
+            </div>
+
+            <div class="stat-card">
+                <h2 id="pendingTasks">0</h2>
+                <p>Pending</p>
+            </div>
+
+            <div class="stat-card">
+                <h2 id="completedTasks">0</h2>
+                <p>Completed</p>
+            </div>
+        </section>
+
+        <section class="task-panel">
+            <h2>Create a New Task</h2>
+
+            <form id="taskForm">
+                <input
+                    type="text"
+                    id="taskInput"
+                    placeholder="Enter a task"
+                    maxlength="100"
+                    required
+                >
+
+                <select id="taskPriority">
+                    <option value="Low">Low Priority</option>
+                    <option value="Medium">Medium Priority</option>
+                    <option value="High">High Priority</option>
+                </select>
+
+                <button type="submit">Add Task</button>
+            </form>
+        </section>
+
+        <section class="task-panel">
+            <div class="task-heading">
+                <h2>My Tasks</h2>
+                <button id="clearCompleted" class="secondary-button">
+                    Clear Completed
+                </button>
+            </div>
+
+            <div id="taskList" class="task-list">
+                <p class="empty-message">No tasks have been created.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Innovartus Technologies — Cloud Computing Case Study 3</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
