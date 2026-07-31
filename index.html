@@ -1,80 +1,444 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Innovartus Task Manager</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Innovartus Cloud Study Planner</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
 <body>
+  <section id="authSection" class="auth-container">
+    <div class="auth-card">
+      <h1>Innovartus Cloud Study Planner</h1>
+      <p>Register or sign in to manage study activities, reminders and collaboration.</p>
 
-    <header>
-        <div>
-            <h1>Innovartus Cloud Task Manager</h1>
-            <p>A simple SaaS application deployed using CI/CD</p>
+      <div class="auth-tabs">
+        <button type="button" id="showLoginBtn" class="auth-tab active">Login</button>
+        <button type="button" id="showRegisterBtn" class="auth-tab">Register</button>
+      </div>
+
+      <form id="loginForm">
+        <label for="loginEmail">Email Address</label>
+        <input type="email" id="loginEmail" placeholder="Enter your email" required>
+
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+
+        <button type="submit" class="auth-submit">Login</button>
+      </form>
+
+      <form id="registerForm" hidden>
+        <label for="registerEmail">Email Address</label>
+        <input type="email" id="registerEmail" placeholder="Enter your email" required>
+
+        <label for="registerPassword">Password</label>
+        <input type="password" id="registerPassword" placeholder="Create a password" minlength="6" required>
+
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" placeholder="Repeat your password" minlength="6" required>
+
+        <button type="submit" class="auth-submit">Create Account</button>
+      </form>
+
+      <p id="authMessage" class="auth-message"></p>
+    </div>
+  </section>
+
+  <header class="app-header">
+    <div class="brand-area">
+      <div>
+        <h1>Innovartus Cloud Study Planner</h1>
+        <p>Richard Mensah · Student ID 080019754639</p>
+      </div>
+    </div>
+
+    <div class="header-meta">
+      <div class="header-user">
+        <span id="headerUserEmail">Signed out</span>
+        <strong id="headerStudentName">Richard Mensah</strong>
+        <small id="headerStudentId">Student ID: 080019754639</small>
+      </div>
+      <button type="button" id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open navigation">☰</button>
+    </div>
+
+    <nav class="main-nav" id="mainNav">
+      <button type="button" class="nav-link active" data-section="dashboardSection">Dashboard</button>
+      <button type="button" class="nav-link" data-section="activitiesSection">My Study Activities</button>
+      <button type="button" class="nav-link" data-section="sharedSection">Shared Activities</button>
+      <button type="button" class="nav-link" data-section="analyticsSection">Analytics</button>
+      <button type="button" class="nav-link" data-section="profileSection">User Profile</button>
+      <button type="button" id="logoutBtn" class="logout-btn">Logout</button>
+    </nav>
+  </header>
+
+  <main id="appSection" hidden>
+    <div class="container">
+      <div id="statusMessage" class="status-message" aria-live="polite"></div>
+
+      <section id="dashboardSection" class="app-section active">
+        <div class="section-head">
+          <div>
+            <h2>Dashboard</h2>
+            <p>Study sessions, deadlines, reminders and collaboration in one place.</p>
+          </div>
+          <button type="button" id="seedDemoDataBtn" class="secondary-btn">Seed Demo Data</button>
         </div>
-    </header>
 
-    <main class="container">
+        <div class="summary-grid" id="summaryGrid"></div>
+        <div id="reminderCard" class="reminder-card" hidden></div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Recent Activities</h3>
+            <span class="muted">Latest updates from your planner</span>
+          </div>
+          <div id="recentActivitiesList" class="stack-list"></div>
+        </div>
+      </section>
 
-        <section class="statistics">
-            <div class="stat-card">
-                <h2 id="totalTasks">0</h2>
-                <p>Total Tasks</p>
+      <section id="activitiesSection" class="app-section">
+        <div class="section-head">
+          <div>
+            <h2>My Study Activities</h2>
+            <p>Create, edit, complete and manage your study workload.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Create New Activity</h3>
+            <span class="muted">Capture study sessions, assignments and milestones</span>
+          </div>
+          <form id="activityForm" class="activity-form">
+            <label class="field">
+              <span>Activity title</span>
+              <input type="text" id="activityTitleInput" maxlength="200" required>
+            </label>
+            <label class="field">
+              <span>Course code</span>
+              <input type="text" id="activityCourseInput" maxlength="50" required>
+            </label>
+            <label class="field">
+              <span>Activity type</span>
+              <select id="activityTypeSelect">
+                <option value="Study Session">Study Session</option>
+                <option value="Assignment">Assignment</option>
+                <option value="Examination">Examination</option>
+                <option value="Project">Project</option>
+                <option value="Revision">Revision</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Category</span>
+              <select id="activityCategorySelect">
+                <option value="Academic">Academic</option>
+                <option value="Work">Work</option>
+                <option value="Personal">Personal</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Priority</span>
+              <select id="activityPrioritySelect">
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Status</span>
+              <select id="activityStatusSelect">
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Due date and time</span>
+              <input type="datetime-local" id="activityDueDateInput" required>
+            </label>
+            <label class="field">
+              <span>Reminder date and time</span>
+              <input type="datetime-local" id="activityReminderInput">
+            </label>
+            <label class="field">
+              <span>Optional collaborator email</span>
+              <input type="email" id="activityShareEmailInput" placeholder="jennifer.ahedor@htu.edu.gh">
+            </label>
+            <div class="field field-submit">
+              <button type="submit" id="activitySubmitBtn" class="primary-btn">Add Activity</button>
             </div>
+          </form>
+        </div>
 
-            <div class="stat-card">
-                <h2 id="pendingTasks">0</h2>
-                <p>Pending</p>
+        <div class="panel">
+          <div class="panel-head panel-head-stack">
+            <div>
+              <h3>Filter and Organise</h3>
+              <span class="muted">Find the right activities quickly</span>
             </div>
+            <button type="button" id="clearFiltersBtn" class="secondary-btn">Clear Filters</button>
+          </div>
+          <div class="filters-grid">
+            <label class="field">
+              <span>Search</span>
+              <input type="text" id="searchInput" placeholder="Search title or course">
+            </label>
+            <label class="field">
+              <span>Course</span>
+              <select id="courseFilterSelect"></select>
+            </label>
+            <label class="field">
+              <span>Activity type</span>
+              <select id="typeFilterSelect">
+                <option value="All">All types</option>
+                <option value="Study Session">Study Session</option>
+                <option value="Assignment">Assignment</option>
+                <option value="Examination">Examination</option>
+                <option value="Project">Project</option>
+                <option value="Revision">Revision</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Category</span>
+              <select id="categoryFilterSelect">
+                <option value="All">All categories</option>
+                <option value="Academic">Academic</option>
+                <option value="Work">Work</option>
+                <option value="Personal">Personal</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Priority</span>
+              <select id="priorityFilterSelect">
+                <option value="All">All priorities</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Status</span>
+              <select id="statusFilterSelect">
+                <option value="All">All statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Due date filter</span>
+              <select id="dueFilterSelect">
+                <option value="All">All</option>
+                <option value="Overdue">Overdue</option>
+                <option value="DueToday">Due today</option>
+                <option value="DueThisWeek">Due this week</option>
+                <option value="Upcoming">Upcoming</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Sort by</span>
+              <select id="sortFilterSelect">
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+                <option value="dueAsc">Due date ascending</option>
+                <option value="dueDesc">Due date descending</option>
+                <option value="priority">Priority</option>
+                <option value="alpha">Alphabetical title</option>
+              </select>
+            </label>
+          </div>
+          <div id="activeFiltersBar" class="active-filters"></div>
+        </div>
 
-            <div class="stat-card">
-                <h2 id="completedTasks">0</h2>
-                <p>Completed</p>
-            </div>
-        </section>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Activities List</h3>
+            <span class="muted">Edit, complete, share or delete</span>
+          </div>
+          <div id="activitiesList" class="stack-list"></div>
+        </div>
+      </section>
 
-        <section class="task-panel">
-            <h2>Create a New Task</h2>
+      <section id="sharedSection" class="app-section">
+        <div class="section-head">
+          <div>
+            <h2>Shared Activities</h2>
+            <p>Collaborative activities shared with you or by you.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Shared with You</h3>
+            <span class="muted">Review updates and change status</span>
+          </div>
+          <div id="sharedWithYouList" class="stack-list"></div>
+        </div>
+      </section>
 
-            <form id="taskForm">
-                <input
-                    type="text"
-                    id="taskInput"
-                    placeholder="Enter a task"
-                    maxlength="100"
-                    required
-                >
+      <section id="analyticsSection" class="app-section">
+        <div class="section-head">
+          <div>
+            <h2>Analytics</h2>
+            <p>Monitor progress, delivery dates and study workload.</p>
+          </div>
+        </div>
+        <div class="analytics-grid">
+          <div class="panel chart-card"><canvas id="completionChart"></canvas></div>
+          <div class="panel chart-card"><canvas id="courseChart"></canvas></div>
+          <div class="panel chart-card"><canvas id="typeChart"></canvas></div>
+          <div class="panel chart-card"><canvas id="priorityChart"></canvas></div>
+          <div class="panel chart-card"><canvas id="weeklyChart"></canvas></div>
+          <div class="panel chart-card"><canvas id="dueOverviewChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Recent Activity Table</h3>
+            <span class="muted">Overview of the latest changes</span>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr><th>Activity</th><th>Course</th><th>Type</th><th>Status</th><th>Last Updated</th><th>Owner</th></tr>
+              </thead>
+              <tbody id="recentTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-                <select id="taskPriority">
-                    <option value="Low">Low Priority</option>
-                    <option value="Medium">Medium Priority</option>
-                    <option value="High">High Priority</option>
-                </select>
+      <section id="profileSection" class="app-section">
+        <div class="section-head">
+          <div>
+            <h2>User Profile</h2>
+            <p>Student and collaboration information.</p>
+          </div>
+        </div>
+        <div class="panel profile-card">
+          <h3>Richard Mensah</h3>
+          <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+          <p><strong>Student ID:</strong> 080019754639</p>
+          <p><strong>Application:</strong> Innovartus Cloud Study Planner</p>
+          <p><strong>Firebase Project:</strong> Richard-Task-Manager</p>
+          <div class="profile-note">
+            <p>Optional collaboration example: Ahedor Jennifer · jennifer.ahedor@htu.edu.gh</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
 
-                <button type="submit">Add Task</button>
-            </form>
-        </section>
+  <div id="loadingOverlay" class="loading-overlay" hidden>
+    <div class="spinner" aria-label="Loading"></div>
+  </div>
 
-        <section class="task-panel">
-            <div class="task-heading">
-                <h2>My Tasks</h2>
-                <button id="clearCompleted" class="secondary-button">
-                    Clear Completed
-                </button>
-            </div>
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
 
-            <div id="taskList" class="task-list">
-                <p class="empty-message">No tasks have been created.</p>
-            </div>
-        </section>
+  <div id="editModal" class="modal" hidden>
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+      <div class="modal-header">
+        <h2 id="editModalTitle">Edit Activity</h2>
+        <button type="button" id="closeEditBtn" class="close-btn" aria-label="Close edit dialog">×</button>
+      </div>
+      <form id="editActivityForm">
+        <input type="hidden" id="editActivityId">
+        <label class="field">
+          <span>Activity title</span>
+          <input type="text" id="editActivityTitle" maxlength="200" required>
+        </label>
+        <label class="field">
+          <span>Course code</span>
+          <input type="text" id="editActivityCourse" maxlength="50" required>
+        </label>
+        <label class="field">
+          <span>Activity type</span>
+          <select id="editActivityType">
+            <option value="Study Session">Study Session</option>
+            <option value="Assignment">Assignment</option>
+            <option value="Examination">Examination</option>
+            <option value="Project">Project</option>
+            <option value="Revision">Revision</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Category</span>
+          <select id="editActivityCategory">
+            <option value="Academic">Academic</option>
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Priority</span>
+          <select id="editActivityPriority">
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Status</span>
+          <select id="editActivityStatus">
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Due date and time</span>
+          <input type="datetime-local" id="editActivityDueDate" required>
+        </label>
+        <label class="field">
+          <span>Reminder date and time</span>
+          <input type="datetime-local" id="editActivityReminder">
+        </label>
+        <div class="modal-actions">
+          <button type="button" id="cancelEditBtn" class="secondary-btn">Cancel</button>
+          <button type="submit" class="primary-btn">Save Changes</button>
+        </div>
+        <p id="editMessage" class="form-message"></p>
+      </form>
+    </div>
+  </div>
 
-    </main>
+  <div id="shareModal" class="modal" hidden>
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="shareModalTitle">
+      <div class="modal-header">
+        <h2 id="shareModalTitle">Share Activity</h2>
+        <button type="button" id="closeShareBtn" class="close-btn" aria-label="Close share dialog">×</button>
+      </div>
+      <form id="shareActivityForm">
+        <label class="field">
+          <span>Collaborator email</span>
+          <input type="email" id="shareEmailInput" placeholder="jennifer.ahedor@htu.edu.gh" required>
+        </label>
+        <div class="modal-actions">
+          <button type="button" id="cancelShareBtn" class="secondary-btn">Cancel</button>
+          <button type="submit" class="primary-btn">Share Activity</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    <footer>
-        <p>Innovartus Technologies — Cloud Computing Case Study 3</p>
-    </footer>
+  <div id="confirmModal" class="modal" hidden>
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+      <div class="modal-header">
+        <h2 id="confirmModalTitle">Confirm action</h2>
+        <button type="button" id="closeConfirmBtn" class="close-btn" aria-label="Close confirmation dialog">×</button>
+      </div>
+      <p id="confirmMessage" class="confirm-message"></p>
+      <div class="modal-actions">
+        <button type="button" id="cancelConfirmBtn" class="secondary-btn">Cancel</button>
+        <button type="button" id="confirmActionBtn" class="danger-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
 
-    <script type="module" src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
